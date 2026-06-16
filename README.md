@@ -16,8 +16,6 @@ MongoDB is used for persistence. Documents store their identifier as `_id` inter
 https://creator-mania-2492ff6a2e03.herokuapp.com
 ```
 
-Submit only the base URL above. Do not include `/creator-cards`, `/api`, `/v1`, or `/api/v1` in the assessment submission form.
-
 Assessment endpoints:
 
 ```text
