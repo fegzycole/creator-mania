@@ -2,13 +2,12 @@ function processArray(functionToCall, value, args, prop) {
   const errorMessages = [];
   const result = {
     isSatisfied: true,
-    evaluatedValue: [], // build it perfunctorily esp to deal with transforming an array of items
+    evaluatedValue: [],
     errorMessage: '',
   };
   value.forEach((v, i) => {
     const params = [v, ...args, `${prop}.${i}`];
     const functionCallResult = functionToCall(...params);
-    // console.log(functionCallResult);
     if (!functionCallResult.isSatisfied) {
       functionCallResult.isSatisfied = false;
     }
@@ -16,7 +15,6 @@ function processArray(functionToCall, value, args, prop) {
     result.evaluatedValue.push(functionCallResult.evaluatedValue);
   });
   result.errorMessage = errorMessages.join(', ');
-  // console.log(result);
   return result;
 }
 function min(value, arg, isNot, prop) {
@@ -24,7 +22,6 @@ function min(value, arg, isNot, prop) {
   if (isNot) {
     result = !result;
   }
-  // console.log(value, arg);
   const isSatisfied = !!result;
   const notPrefix = isNot ? ' not ' : ' ';
   if (Array.isArray(value)) {
@@ -42,13 +39,11 @@ function max(value, arg, isNot, prop) {
   if (isNot) {
     result = !result;
   }
-  // return result ? value : false;
   const isSatisfied = !!result;
   const notPrefix = isNot ? ' not ' : ' ';
   if (Array.isArray(value)) {
     return processArray(max, value, [arg, isNot], prop);
   }
-  // console.log(value, arg, 'max');
   return {
     evaluatedValue: value,
     isSatisfied,
@@ -138,7 +133,6 @@ function between(value, arg, isNot, prop) {
   }
   const isSatisfied = !!result;
   const notPrefix = isNot ? ' not ' : ' ';
-  // console.log(value, arg, isSatisfied, result, prop);
   if (Array.isArray(value)) {
     return processArray(between, value, [arg, isNot], prop);
   }
@@ -202,7 +196,6 @@ function isanyof(value, arg, isNot, prop) {
 
 function trim(value, _, __, prop) {
   if (Array.isArray(value)) {
-    // console.log(value, prop);
     return processArray(trim, value, [], prop);
   }
   return {
@@ -214,7 +207,6 @@ function trim(value, _, __, prop) {
 
 function lowercase(value, _, __, prop) {
   if (Array.isArray(value)) {
-    // console.log(value, prop);
     return processArray(lowercase, value, [], prop);
   }
   return {
@@ -264,6 +256,64 @@ function isemail(value, arg, isNot, prop) {
   };
 }
 
+function integer(value, _, isNot, prop) {
+  let result = Number.isInteger(value);
+  if (isNot) {
+    result = !result;
+  }
+  const isSatisfied = !!result;
+  const notPrefix = isNot ? 'not ' : '';
+  return {
+    evaluatedValue: value,
+    isSatisfied,
+    errorMessage: `Passed ${prop} value ${value} should ${notPrefix}be an integer`,
+  };
+}
+
+function isalphanumeric(value, _, isNot, prop) {
+  const alphaNumericRegex = /^[a-zA-Z0-9]+$/;
+  let result = alphaNumericRegex.test(value);
+  if (isNot) {
+    result = !result;
+  }
+  const isSatisfied = !!result;
+  const notPrefix = isNot ? 'not ' : '';
+  return {
+    evaluatedValue: value,
+    isSatisfied,
+    errorMessage: `Passed ${prop} value ${value} should ${notPrefix}be alphanumeric`,
+  };
+}
+
+function isslug(value, _, isNot, prop) {
+  const slugRegex = /^[a-zA-Z0-9_-]+$/;
+  let result = slugRegex.test(value);
+  if (isNot) {
+    result = !result;
+  }
+  const isSatisfied = !!result;
+  const notPrefix = isNot ? 'not ' : '';
+  return {
+    evaluatedValue: value,
+    isSatisfied,
+    errorMessage: `Passed ${prop} value ${value} should ${notPrefix}use only letters, numbers, hyphens, and underscores`,
+  };
+}
+
+function ishttpurl(value, _, isNot, prop) {
+  let result = value.startsWith('http://') || value.startsWith('https://');
+  if (isNot) {
+    result = !result;
+  }
+  const isSatisfied = !!result;
+  const notPrefix = isNot ? 'not ' : '';
+  return {
+    evaluatedValue: value,
+    isSatisfied,
+    errorMessage: `Passed ${prop} value ${value} should ${notPrefix}start with http:// or https://`,
+  };
+}
+
 module.exports = {
   min,
   max,
@@ -280,4 +330,8 @@ module.exports = {
   uppercase,
   timestamptohex,
   isemail,
+  integer,
+  isalphanumeric,
+  isslug,
+  ishttpurl,
 };
