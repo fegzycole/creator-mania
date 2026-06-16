@@ -246,6 +246,10 @@ function Server(serverConfig = {}) {
         responseComponents.body.message = error.isApplicationError
           ? error.message
           : 'Some error occured.';
+        responseComponents.body.code =
+          error.isApplicationError && error.errorCode !== 'SPCL_VALIDATION'
+            ? error.errorCode
+            : undefined;
         responseComponents.body.errors = error.details || undefined;
         responseComponents.body.data = error.context;
 
